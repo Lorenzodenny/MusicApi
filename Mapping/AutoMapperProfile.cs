@@ -11,8 +11,13 @@ namespace MusicApi.Mapping
         {
             // Da entità a DTO
             CreateMap<Artist, ArtistDTO>();
-            CreateMap<Album, AlbumDTO>();
-            CreateMap<Song, SongDTO>();
+            CreateMap<Album, AlbumDTO>()
+                .ForMember(dest => dest.ArtistFullName,
+                           opt => opt.MapFrom(src => $"{src.Artist.FirstName} {src.Artist.LastName}"))
+                .ForMember(dest => dest.SongsCount,
+                           opt => opt.MapFrom(src => src.Songs.Count));
+            CreateMap<Song, SongDTO>()
+                .ForMember(dto => dto.AlbumName, conf => conf.MapFrom(song => song.Album.Name));
 
             // Da DTO a entità
             CreateMap<CreateArtistDTO, Artist>();

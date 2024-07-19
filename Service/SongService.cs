@@ -19,9 +19,11 @@ public class SongService : ISongService
 
     public async Task<IEnumerable<SongDTO>> GetAllSongsAsync()
     {
-        var songs = await _songRepository.GetAllAsync();
+        var songs = await _songRepository.GetAllIncludingAsync(song => song.Album);
         return _mapper.Map<IEnumerable<SongDTO>>(songs);
     }
+
+
 
     public async Task<SongDTO> GetSongByIdAsync(int songId)
     {

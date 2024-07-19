@@ -6,6 +6,7 @@ using MusicApi.Mapping;
 using MusicApi.Repositories;
 using MusicApi.Service;
 using MusicApi.Service.Facade;
+using MusicApi.Service.HTTP_Client;
 using MusicApi.Utilities.Decorator;
 using MusicApi.Utilities.Proxies;
 using MusicApi.Validators;
@@ -51,6 +52,13 @@ builder.Services.Decorate<ISongService, CachingSongServiceProxy>();
 
 // Registrazione Facade
 builder.Services.AddScoped<IMusicManagementFacade, MusicManagementFacade>();
+
+
+// Registra HttpClient
+builder.Services.AddHttpClient();
+
+// Configura Client
+builder.Services.AddHttpClient<FakeApiService>();
 
 
 var app = builder.Build();

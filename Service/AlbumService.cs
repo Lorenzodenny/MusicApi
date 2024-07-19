@@ -22,9 +22,10 @@ public class AlbumService : IAlbumService
 
     public async Task<IEnumerable<AlbumDTO>> GetAllAlbumsAsync()
     {
-        var albums = await _albumRepository.GetAllAsync();
+        var albums = await _albumRepository.GetAllIncludingAsync(album => album.Artist);
         return _mapper.Map<IEnumerable<AlbumDTO>>(albums);
     }
+
 
     public async Task<AlbumDTO> GetAlbumByIdAsync(int albumId)
     {
