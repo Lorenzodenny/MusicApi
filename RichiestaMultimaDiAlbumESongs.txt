@@ -1,0 +1,40 @@
+﻿{
+  "artistDto": {
+    "firstName": "Marco",
+    "lastName": "Bianchi"
+  },
+  "albumsSongsDto": [
+    {
+      "albumDto": {
+        "name": "Primo Album",
+        "genre": "Rock"
+      },
+      "songsDto": [
+        {
+          "name": "Canzone 1",
+          "year": 2022
+        },
+        {
+          "name": "Canzone 2",
+          "year": 2022
+        }
+      ]
+    },
+    {
+      "albumDto": {
+        "name": "Secondo Album",
+        "genre": "Jazz"
+      },
+      "songsDto": [
+        {
+          "name": "Jazz Inizio",
+          "year": 2023
+        },
+        {
+          "name": "Jazz Fine",
+          "year": 2023
+        }
+      ]
+    }
+  ]
+}
