@@ -1,5 +1,6 @@
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using MusicApi;
 using MusicApi.Abstract;
 using MusicApi.DataAccessLayer;
 using MusicApi.Mapping;
@@ -13,7 +14,12 @@ using MusicApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Registrazione dei controller e dei servizi essenziali
+// Configura i servizi usando la classe Startup
+var startup = new Startup(builder.Configuration);
+startup.ConfigureServices(builder.Services);
+
+
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,9 +33,8 @@ builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IAlbumService, AlbumService>();
 builder.Services.AddScoped<IArtistService, ArtistService>();
 
-// REgistrazione Repository generico
+// Registrazione Repository generico
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
 
 // Aggiungi AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -38,11 +43,9 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 builder.Services.AddControllers()
     .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateArtistDTOValidator>());
 
-
 // Registrazione delle operazioni base e dei decorator
 builder.Services.AddScoped<ISongOperation, BasicSongOperation>();
 builder.Services.Decorate<ISongOperation, LoggingSongOperationDecorator>();
-
 
 // Aggiungi Memory Cache
 builder.Services.AddMemoryCache();
@@ -53,26 +56,31 @@ builder.Services.Decorate<ISongService, CachingSongServiceProxy>();
 // Registrazione Facade
 builder.Services.AddScoped<IMusicManagementFacade, MusicManagementFacade>();
 
-
 // Registra HttpClient
 builder.Services.AddHttpClient();
 
 // Configura Client
 builder.Services.AddHttpClient<FakeApiService>();
 
-
 var app = builder.Build();
 
-// Configurazione del middleware, inclusa la documentazione Swagger in sviluppo
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Middleware per l'autorizzazione e il routing delle richieste
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
 app.UseAuthorization();
+
 app.MapControllers();
 
-// Avvio dell'applicazione
+// Configura l'applicazione usando la classe Startup
+startup.Configure(app, app.Environment);
+
 app.Run();

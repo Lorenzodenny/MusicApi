@@ -3,13 +3,18 @@ using Newtonsoft.Json;
 
 namespace MusicApi.Service.HTTP_Client
 {
-    public class FakeApiService
+    public class FakeApiService : IDisposable
     {
         private readonly HttpClient _httpClient;
 
         public FakeApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public void Dispose()
+        {
+            _httpClient.Dispose();
         }
 
         public async Task<TodoItem> GetFakeDataAsync()
