@@ -1,0 +1,3 @@
+﻿Da usare per runnare il server test http_test
+
+dotnet run --launch-profile http_test --project "C:\Users\Marco Silveri\Desktop\ApiMusica\MusicApi\MusicApi.csproj"
