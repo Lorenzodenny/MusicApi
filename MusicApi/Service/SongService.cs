@@ -1,20 +1,27 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using MusicApi.Abstract;
 using MusicApi.DataAccessLayer;
 using MusicApi.DTO.RequestDTO;
 using MusicApi.DTO.ResponseDTO;
 using MusicApi.Model;
+using MusicApi.Utilities.Commands;
+using MusicApi.Utilities.Commands.SongCommand;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 public class SongService : ISongService
 {
-
     private readonly IGenericRepository<Song> _songRepository;
     private readonly IMapper _mapper;
-    public SongService(IGenericRepository<Song> songRepository, IMapper mapper)
+    private readonly ISubject _subject;
+    private readonly ICommandInvoker _invoker;
+
+    public SongService(IGenericRepository<Song> songRepository, IMapper mapper, ISubject subject, ICommandInvoker invoker)
     {
         _songRepository = songRepository;
         _mapper = mapper;
+        _subject = subject;
+        _invoker = invoker;
     }
 
     public async Task<IEnumerable<SongDTO>> GetAllSongsAsync()
@@ -22,8 +29,6 @@ public class SongService : ISongService
         var songs = await _songRepository.GetAllIncludingAsync(song => song.Album);
         return _mapper.Map<IEnumerable<SongDTO>>(songs);
     }
-
-
 
     public async Task<SongDTO> GetSongByIdAsync(int songId)
     {
@@ -33,22 +38,32 @@ public class SongService : ISongService
 
     public async Task<SongDTO> CreateSongAsync(CreateSongDTO songDto)
     {
-        var song = _mapper.Map<Song>(songDto);
-        await _songRepository.AddAsync(song);
-        return _mapper.Map<SongDTO>(song);
+        var command = new CreateSongCommand(_songRepository, _mapper, songDto);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
+
+        var createdSong = command.CreatedSong;
+        _subject.Notify($"Song created: {createdSong.Name}");
+        return _mapper.Map<SongDTO>(createdSong);
     }
 
 
     public async Task UpdateSongAsync(int songId, CreateSongDTO songDto)
     {
+        var command = new UpdateSongCommand(_songRepository, _mapper, songId, songDto);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
+
         var song = await _songRepository.GetByIdAsync(songId);
-        if (song == null) return;
-        _mapper.Map(songDto, song);
-        await _songRepository.UpdateAsync(song);
+        _subject.Notify($"Song updated: {song.Name}");
     }
 
     public async Task DeleteSongAsync(int songId)
     {
-        await _songRepository.DeleteAsync(songId);
+        var command = new DeleteSongCommand(_songRepository, songId);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
+        _subject.Notify($"Song deleted: {songId}");
     }
+
 }

@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicApi", "MusicApi.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicApi.Tests", "..\MusicApi.Tests\MusicApi.Tests.csproj", "{5B0A8C9D-D758-4EFD-8EA7-85B1397A6D82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicApi.PlaywrightTests", "..\MusicApi.PlaywrightTests\MusicApi.PlaywrightTests.csproj", "{610659B6-BB86-4282-9081-0829D4296FBE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicApi.PlaywrightTests", "..\MusicApi.PlaywrightTests\MusicApi.PlaywrightTests.csproj", "{610659B6-BB86-4282-9081-0829D4296FBE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementi di soluzione", "Elementi di soluzione", "{C794B372-88FE-4319-93B7-7D51F4BEBE03}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

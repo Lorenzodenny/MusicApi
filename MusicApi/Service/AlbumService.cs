@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using MusicApi.Abstract;
-using MusicApi.Model;
+using MusicApi.DataAccessLayer;
 using MusicApi.DTO.RequestDTO;
 using MusicApi.DTO.ResponseDTO;
-using System;
+using MusicApi.Model;
+using MusicApi.Utilities.Commands;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,12 +13,16 @@ public class AlbumService : IAlbumService
     private readonly IGenericRepository<Album> _albumRepository;
     private readonly IGenericRepository<Artist> _artistRepository;
     private readonly IMapper _mapper;
+    private readonly ISubject _subject;
+    private readonly ICommandInvoker _invoker;
 
-    public AlbumService(IGenericRepository<Album> albumRepository, IGenericRepository<Artist> artistRepository, IMapper mapper)
+    public AlbumService(IGenericRepository<Album> albumRepository, IGenericRepository<Artist> artistRepository, IMapper mapper, ISubject subject, ICommandInvoker invoker)
     {
         _albumRepository = albumRepository;
         _artistRepository = artistRepository;
         _mapper = mapper;
+        _subject = subject;
+        _invoker = invoker;
     }
 
     public async Task<IEnumerable<AlbumDTO>> GetAllAlbumsAsync()
@@ -25,7 +30,6 @@ public class AlbumService : IAlbumService
         var albums = await _albumRepository.GetAllIncludingAsync(album => album.Artist);
         return _mapper.Map<IEnumerable<AlbumDTO>>(albums);
     }
-
 
     public async Task<AlbumDTO> GetAlbumByIdAsync(int albumId)
     {
@@ -40,33 +44,31 @@ public class AlbumService : IAlbumService
 
     public async Task<AlbumDTO> CreateAlbumAsync(CreateAlbumDTO albumDto)
     {
-        var artist = await _artistRepository.GetByIdAsync(albumDto.ArtistId);
-        if (artist == null)
-        {
-            throw new ArgumentException("Artist not found.");
-        }
+        var command = new CreateAlbumCommand(_albumRepository, _mapper, albumDto);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
 
-        var album = _mapper.Map<Album>(albumDto);
-        album.ArtistId = artist.ArtistId;
-        await _albumRepository.AddAsync(album);
-
-        return _mapper.Map<AlbumDTO>(album);
+        var createdAlbum = command.CreatedAlbum;
+        _subject.Notify($"Album created: {createdAlbum.Name}");
+        return _mapper.Map<AlbumDTO>(createdAlbum);
     }
 
     public async Task UpdateAlbumAsync(int albumId, CreateAlbumDTO albumDto)
     {
-        var album = await _albumRepository.GetByIdAsync(albumId);
-        if (album == null)
-        {
-            throw new ArgumentException("Album not found.");
-        }
+        var command = new UpdateAlbumCommand(_albumRepository, _mapper, albumId, albumDto);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
 
-        _mapper.Map(albumDto, album);
-        await _albumRepository.UpdateAsync(album);
+        var album = await _albumRepository.GetByIdAsync(albumId);
+        _subject.Notify($"Album updated: {album.Name}");
     }
 
     public async Task DeleteAlbumAsync(int albumId)
     {
-        await _albumRepository.DeleteAsync(albumId);
+        var command = new DeleteAlbumCommand(_albumRepository, albumId);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
+
+        _subject.Notify($"Album deleted: {albumId}");
     }
 }

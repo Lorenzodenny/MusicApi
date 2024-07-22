@@ -3,6 +3,7 @@ using MusicApi.Abstract;
 using MusicApi.DTO.RequestDTO;
 using MusicApi.DTO.ResponseDTO;
 using MusicApi.Model;
+using MusicApi.Utilities.Commands;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,11 +11,15 @@ public class ArtistService : IArtistService
 {
     private readonly IGenericRepository<Artist> _artistRepository;
     private readonly IMapper _mapper;
+    private readonly ISubject _subject;
+    private readonly ICommandInvoker _invoker;
 
-    public ArtistService(IGenericRepository<Artist> artistRepository, IMapper mapper)
+    public ArtistService(IGenericRepository<Artist> artistRepository, IMapper mapper, ISubject subject, ICommandInvoker invoker)
     {
         _artistRepository = artistRepository;
         _mapper = mapper;
+        _subject = subject;
+        _invoker = invoker;
     }
 
     public async Task<IEnumerable<ArtistDTO>> GetAllArtistsAsync()
@@ -36,29 +41,31 @@ public class ArtistService : IArtistService
 
     public async Task<ArtistDTO> CreateArtistAsync(CreateArtistDTO artistDto)
     {
-        var artist = _mapper.Map<Artist>(artistDto);
-        await _artistRepository.AddAsync(artist);
+        var command = new CreateArtistCommand(_artistRepository, _mapper, artistDto);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
 
-        // Carica manualmente gli album
-        artist = await _artistRepository.GetByIdAsync(artist.ArtistId);
-
-        return _mapper.Map<ArtistDTO>(artist);
+        var createdArtist = command.CreatedArtist;
+        _subject.Notify($"Artist created: {createdArtist.FirstName} {createdArtist.LastName}");
+        return _mapper.Map<ArtistDTO>(createdArtist);
     }
 
     public async Task UpdateArtistAsync(int artistId, CreateArtistDTO artistDto)
     {
-        var artist = await _artistRepository.GetByIdAsync(artistId);
-        if (artist == null)
-        {
-            throw new ArgumentException("Artist not found.");
-        }
+        var command = new UpdateArtistCommand(_artistRepository, _mapper, artistId, artistDto);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
 
-        _mapper.Map(artistDto, artist);
-        await _artistRepository.UpdateAsync(artist);
+        var artist = await _artistRepository.GetByIdAsync(artistId);
+        _subject.Notify($"Artist updated: {artist.FirstName} {artist.LastName}");
     }
 
     public async Task DeleteArtistAsync(int artistId)
     {
-        await _artistRepository.DeleteAsync(artistId);
+        var command = new DeleteArtistCommand(_artistRepository, artistId);
+        _invoker.AddCommand(command);
+        await _invoker.ExecuteCommandsAsync();
+
+        _subject.Notify($"Artist deleted: {artistId}");
     }
 }

@@ -1,0 +1,16 @@
+﻿{
+    "CreateArtistDto": {
+        "FirstName": "John",
+        "LastName": "Doe"
+    },
+    "CreateAlbumDto": {
+        "Name": "New Album",
+        "Genre": "Rock",
+        "ArtistId": 1
+    },
+    "CreateSongDto": {
+        "Name": "New Song",
+        "Year": 2023,
+        "AlbumId": 1
+    }
+}

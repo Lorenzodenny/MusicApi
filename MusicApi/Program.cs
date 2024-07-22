@@ -8,7 +8,9 @@ using MusicApi.Repositories;
 using MusicApi.Service;
 using MusicApi.Service.Facade;
 using MusicApi.Service.HTTP_Client;
+using MusicApi.Utilities.Commands;
 using MusicApi.Utilities.Decorator;
+using MusicApi.Utilities.Observers;
 using MusicApi.Utilities.Proxies;
 using MusicApi.Validators;
 
@@ -62,7 +64,23 @@ builder.Services.AddHttpClient();
 // Configura Client
 builder.Services.AddHttpClient<FakeApiService>();
 
+// Registrazione Observer Pattern
+builder.Services.AddSingleton<ISubject, Subject>();
+builder.Services.AddSingleton<IObserver, LoggerObserver>();
+
+// Registrazione Command
+builder.Services.AddScoped<ICommandInvoker, CommandInvoker>();
+
+// Registro Command di prova
+// Registrazione del ProvaService
+builder.Services.AddScoped<ProvaService>();
+
 var app = builder.Build();
+
+// Attacca l'observer al subject
+var subject = app.Services.GetRequiredService<ISubject>();
+var loggerObserver = app.Services.GetRequiredService<IObserver>();
+subject.Attach(loggerObserver);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

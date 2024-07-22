@@ -1,0 +1,27 @@
+Artist created: Marco Silveri
+Artist updated: Ciao Bello
+Artist created: Marco Bianchi
+Album created: Primo Album
+Song created: Canzone 1
+Song created: Canzone 2
+Album created: Secondo Album
+Song created: Jazz Inizio
+Song created: Jazz Fine
+Artist created: ciao aaaaa
+Artist created: aaaa straaaaaaing
+Album created: seeetring
+Song created: aaaaaaaaaaaaaaaaaa
+Artist created: Marco Bianchi
+Album created: Primo Album
+Song created: Canzone 1
+Song created: Canzone 2
+Album created: Secondo Album
+Song created: Jazz Inizio
+Song created: Jazz Fine
+Artist created: Marco Bianchi
+Album created: Primo Album
+Song created: Canzone 1
+Song created: Canzone 2
+Album created: Secondo Album
+Song created: Jazz Inizio
+Song created: Jazz Fine
