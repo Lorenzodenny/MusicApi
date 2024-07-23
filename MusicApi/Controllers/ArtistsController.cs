@@ -97,5 +97,21 @@ namespace MusicApi.Controllers
                 return StatusCode(500, "An error occurred while deleting the artist.");
             }
         }
+
+        // Pagination
+        [HttpGet("paginate")]
+        public async Task<IActionResult> PaginateArtists([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            try
+            {
+                var result = await _artistService.PaginateArtistsAsync(pageNumber, pageSize);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while attempting to retrieve paginated artists.");
+            }
+        }
+
     }
 }

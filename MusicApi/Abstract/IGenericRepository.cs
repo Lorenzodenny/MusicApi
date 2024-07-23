@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using MusicApi.Model;
+using System.Linq.Expressions;
 
 namespace MusicApi.Abstract
 {
@@ -10,5 +11,8 @@ namespace MusicApi.Abstract
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);
+
+        // pagination
+        Task<PagedResult<T>> PaginateAsync(int pageNumber, int pageSize, params Expression<Func<T, object>>[] includes);
     }
 }

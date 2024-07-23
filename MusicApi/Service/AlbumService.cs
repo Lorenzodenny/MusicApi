@@ -71,4 +71,19 @@ public class AlbumService : IAlbumService
 
         _subject.Notify($"Album deleted: {albumId}");
     }
+
+    // Pagination
+    public async Task<PagedResult<AlbumDetailDTO>> PaginateAlbumDetailsAsync(int pageNumber, int pageSize)
+    {
+        var pagedResult = await _albumRepository.PaginateAsync(pageNumber, pageSize, album => album.Artist, album => album.Songs);
+        var mappedItems = _mapper.Map<IEnumerable<AlbumDetailDTO>>(pagedResult.Items);
+
+        return new PagedResult<AlbumDetailDTO>
+        {
+            Items = mappedItems,
+            TotalItems = pagedResult.TotalItems,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
 }

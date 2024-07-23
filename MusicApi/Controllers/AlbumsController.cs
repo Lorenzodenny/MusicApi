@@ -97,5 +97,21 @@ namespace MusicApi.Controllers
                 return StatusCode(500, "An error occurred while deleting the album.");
             }
         }
+
+        // Pagination
+        [HttpGet("paginate")]
+        public async Task<IActionResult> PaginateAlbumDetails(int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var result = await _albumService.PaginateAlbumDetailsAsync(pageNumber, pageSize);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while attempting to retrieve paginated album details.");
+            }
+        }
+
     }
 }

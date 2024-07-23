@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MusicApi.Abstract;
 using MusicApi.DataAccessLayer;
+using MusicApi.Model;
 using System.Linq.Expressions;
 
 namespace MusicApi.Repositories
@@ -21,7 +22,7 @@ namespace MusicApi.Repositories
             return await _dbSet.ToListAsync();
         }
 
-
+        // Metodo per inserire dinamicamente gli include
         public async Task<List<T>> GetAllIncludingAsync(params Expression<Func<T, object>>[] includeProperties)
         {
             IQueryable<T> query = _dbSet;
@@ -58,5 +59,40 @@ namespace MusicApi.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        // Metodo PaginateAsync:
+        // Questo metodo permette la paginazione degli elementi di tipo T e accetta un parametro 'include' opzionale.
+        // Il parametro 'include' è una funzione che specifica una relazione da includere nel risultato della query.
+        // Ad esempio, passando song => song.Album, indichiamo a Entity Framework di includere i dettagli dell'album associato a ogni canzone.
+        // Se fornito, questo parametro è utilizzato per modificare la query e includere le relazioni specificate.
+
+        // Pagination
+        public async Task<PagedResult<T>> PaginateAsync(int pageNumber, int pageSize, params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+
+            // Applica ogni include passato al metodo
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            var totalItems = await query.CountAsync();
+            var items = await query.Skip((pageNumber - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
+
+            return new PagedResult<T>
+            {
+                Items = items,
+                TotalItems = totalItems,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+
+
+
     }
 }

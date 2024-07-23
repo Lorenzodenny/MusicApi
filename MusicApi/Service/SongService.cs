@@ -66,4 +66,27 @@ public class SongService : ISongService
         _subject.Notify($"Song deleted: {songId}");
     }
 
+    // Metodo PaginateSongsAsync:
+    // Quando chiamiamo il metodo PaginateAsync del repository, passiamo esplicitamente la relazione da includere.
+    // Utilizziamo song => song.Album come parametro 'include', che istruisce il repository a recuperare le canzoni insieme ai loro album correlati.
+    // Questo è utile per ridurre il numero di query separate al database e per migliorare le prestazioni recuperando tutte le informazioni necessarie in una sola volta.
+    // Dopo aver recuperato i dati, utilizziamo AutoMapper per trasformare le entità in DTO che sono poi restituiti all'utente o al sistema client.
+
+    // Pagination
+    public async Task<PagedResult<SongDetailDTO>> PaginateSongsAsync(int pageNumber, int pageSize)
+    {
+        var pagedResult = await _songRepository.PaginateAsync(pageNumber, pageSize, song => song.Album.Artist);
+        var mappedItems = _mapper.Map<IEnumerable<SongDetailDTO>>(pagedResult.Items);
+
+        return new PagedResult<SongDetailDTO>
+        {
+            Items = mappedItems,
+            TotalItems = pagedResult.TotalItems,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
+
+
 }

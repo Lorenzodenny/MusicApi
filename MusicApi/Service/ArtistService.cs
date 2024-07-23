@@ -68,4 +68,20 @@ public class ArtistService : IArtistService
 
         _subject.Notify($"Artist deleted: {artistId}");
     }
+
+    // Pagination
+    public async Task<PagedResult<ArtistDetailDTO>> PaginateArtistsAsync(int pageNumber, int pageSize)
+    {
+        var pagedResult = await _artistRepository.PaginateAsync(pageNumber, pageSize, artist => artist.Albums);
+        var mappedItems = _mapper.Map<IEnumerable<ArtistDetailDTO>>(pagedResult.Items);
+
+        return new PagedResult<ArtistDetailDTO>
+        {
+            Items = mappedItems,
+            TotalItems = pagedResult.TotalItems,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
+    }
+
 }

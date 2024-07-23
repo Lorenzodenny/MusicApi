@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MusicApi.DTO.RequestDTO;
+using MusicApi.Model;
 
 namespace MusicApi.Utilities.Proxies
 {
@@ -59,5 +60,13 @@ namespace MusicApi.Utilities.Proxies
         {
             await _wrappedService.DeleteSongAsync(songId);
         }
+
+        // Pagination
+        public async Task<PagedResult<SongDetailDTO>> PaginateSongsAsync(int pageNumber, int pageSize)
+        {
+            // Aggiungi qui la logica di caching se necessaria, altrimenti semplicemente chiama il metodo del servizio sottostante.
+            return await _wrappedService.PaginateSongsAsync(pageNumber, pageSize);
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MusicApi.DTO.RequestDTO;
 using MusicApi.DTO.ResponseDTO;
+using MusicApi.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,5 +13,8 @@ namespace MusicApi.Abstract
         Task<AlbumDTO> CreateAlbumAsync(CreateAlbumDTO albumDto);
         Task UpdateAlbumAsync(int albumId, CreateAlbumDTO albumDto);
         Task DeleteAlbumAsync(int albumId);
+
+        // Pagination
+        Task<PagedResult<AlbumDetailDTO>> PaginateAlbumDetailsAsync(int pageNumber, int pageSize);
     }
 }
