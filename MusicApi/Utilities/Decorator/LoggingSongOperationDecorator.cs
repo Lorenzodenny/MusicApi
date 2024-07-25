@@ -14,12 +14,12 @@ namespace MusicApi.Utilities.Decorator
 
         public async Task<SongDTO> GetSongByIdAsync(int songId)
         {
-            // Log before operation
+            // Log prima dell'operazione
             Console.WriteLine("Starting to retrieve song details.");
 
             var song = await _decoratedSongOperation.GetSongByIdAsync(songId);
 
-            // Log after operation
+            // Log dopo l'operazione
             Console.WriteLine("Retrieved song details successfully.");
 
             return song;

@@ -1,9 +1,10 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using MusicApi;
 using MusicApi.Abstract;
 using MusicApi.DataAccessLayer;
-using MusicApi.Mapping;
+using MusicApi.DTO.RequestDTO;
 using MusicApi.Repositories;
 using MusicApi.Service;
 using MusicApi.Service.Facade;
@@ -38,12 +39,16 @@ builder.Services.AddScoped<IArtistService, ArtistService>();
 // Registrazione Repository generico
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
+// Registra tutte le classi di mapping da un assembly specifico, se sono tutte nello stesso assembly
+//builder.Services.AddAutoMapper(typeof(Startup).Assembly); => Registrazione totale
+
 // Aggiungi AutoMapper
-builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddAutoMapper(typeof(ArtistMappingProfile), typeof(AlbumMappingProfile), typeof(SongMappingProfile));
 
 // Registrazione Fluent Validation
-builder.Services.AddControllers()
-    .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateArtistDTOValidator>());
+builder.Services.AddTransient<IValidator<CreateAlbumDTO>, CreateAlbumDTOValidator>();
+builder.Services.AddTransient<IValidator<CreateArtistDTO>, CreateArtistDTOValidator>();
+builder.Services.AddTransient<IValidator<CreateSongDTO>, CreateSongDTOValidator>();
 
 // Registrazione delle operazioni base e dei decorator
 builder.Services.AddScoped<ISongOperation, BasicSongOperation>();
@@ -66,7 +71,7 @@ builder.Services.AddHttpClient<FakeApiService>();
 
 // Registrazione Observer Pattern
 builder.Services.AddSingleton<ISubject, Subject>();
-builder.Services.AddSingleton<IObserver, LoggerObserver>();
+builder.Services.AddSingleton<IObserver, LoggerObserver>(); 
 
 // Registrazione Command
 builder.Services.AddScoped<ICommandInvoker, CommandInvoker>();

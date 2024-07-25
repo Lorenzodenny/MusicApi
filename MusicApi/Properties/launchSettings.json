@@ -32,7 +32,17 @@
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5050", // Cambia questa porta per evitare conflitti
+      "applicationUrl": "http://localhost:5050",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "Artists/paginate",
+      "publishAllPorts": true,
+      "useSSL": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using MusicApi.Abstract;
 using MusicApi.DataAccessLayer;
-using MusicApi.Mapping;
 using MusicApi.Repositories;
 using MusicApi.Service;
 using MusicApi.Service.Facade;
@@ -14,6 +13,10 @@ using MusicApi.Validators;
 using MusicApi;
 using FluentValidation.AspNetCore;
 using MusicApi.Service.HTTP_Client;
+using MusicApi.Utilities.Observers;
+using MusicApi.Utilities.Commands;
+using FluentValidation;
+using MusicApi.DTO.RequestDTO;
 
 
 namespace MusicApi
@@ -47,11 +50,15 @@ namespace MusicApi
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             // Aggiungi AutoMapper
-            services.AddAutoMapper(typeof(AutoMapperProfile));
+            services.AddAutoMapper(typeof(ArtistMappingProfile), typeof(AlbumMappingProfile), typeof(SongMappingProfile));
 
-            // Registrazione Fluent Validation
-            services.AddControllers()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CreateArtistDTOValidator>());
+            // Registrazione dei controller e FluentValidation
+            services.AddControllers();
+
+            // Registrazione esplicita dei validatori
+            services.AddTransient<IValidator<CreateAlbumDTO>, CreateAlbumDTOValidator>();
+            services.AddTransient<IValidator<CreateArtistDTO>, CreateArtistDTOValidator>();
+            services.AddTransient<IValidator<CreateSongDTO>, CreateSongDTOValidator>();
 
             // Registrazione delle operazioni base e dei decorator
             services.AddScoped<ISongOperation, BasicSongOperation>();
@@ -71,6 +78,13 @@ namespace MusicApi
 
             // Configura Client
             services.AddHttpClient<FakeApiService>();
+
+            // Registrazione del Command Invoker e del suo esecutore concreto
+            services.AddScoped<ICommandInvoker, CommandInvoker>();
+
+            // ** Aggiungi la registrazione di ISubject e i suoi componenti correlati **
+            services.AddSingleton<ISubject, Subject>();
+            services.AddSingleton<IObserver, LoggerObserver>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -64,7 +64,6 @@ namespace MusicApi.Utilities.Proxies
         // Pagination
         public async Task<PagedResult<SongDetailDTO>> PaginateSongsAsync(int pageNumber, int pageSize)
         {
-            // Aggiungi qui la logica di caching se necessaria, altrimenti semplicemente chiama il metodo del servizio sottostante.
             return await _wrappedService.PaginateSongsAsync(pageNumber, pageSize);
         }
 

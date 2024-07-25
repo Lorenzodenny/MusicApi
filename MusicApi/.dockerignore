@@ -1,0 +1,8 @@
+﻿**/obj/
+**/bin/
+node_modules/
+*.user
+*.swp
+.DS_Store
+.git/
+logs.txt
