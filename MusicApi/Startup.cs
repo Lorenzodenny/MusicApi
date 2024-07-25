@@ -17,6 +17,9 @@ using MusicApi.Utilities.Observers;
 using MusicApi.Utilities.Commands;
 using FluentValidation;
 using MusicApi.DTO.RequestDTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 namespace MusicApi
@@ -32,6 +35,7 @@ namespace MusicApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+           
             // Registrazione dei controller e dei servizi essenziali
             services.AddControllers();
             services.AddEndpointsApiExplorer();
@@ -98,7 +102,7 @@ namespace MusicApi
 
             // Middleware per l'autorizzazione e il routing delle richieste
             app.UseRouting();
-            app.UseAuthorization();
+            app.UseAuthorization();  // Abilita l'autorizzazione
             // Mappatura dei controller
             app.UseEndpoints(endpoints =>
             {
