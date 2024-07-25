@@ -12,13 +12,15 @@ using System.Threading.Tasks;
 public class SongService : ISongService
 {
     private readonly IGenericRepository<Song> _songRepository;
+    private readonly IGenericRepository<Album> _albumRepository;
     private readonly IMapper _mapper;
     private readonly ISubject _subject;
     private readonly ICommandInvoker _invoker;
 
-    public SongService(IGenericRepository<Song> songRepository, IMapper mapper, ISubject subject, ICommandInvoker invoker)
+    public SongService(IGenericRepository<Song> songRepository, IGenericRepository<Album> albumRepository, IMapper mapper, ISubject subject, ICommandInvoker invoker)
     {
         _songRepository = songRepository;
+        _albumRepository = albumRepository;
         _mapper = mapper;
         _subject = subject;
         _invoker = invoker;
@@ -43,9 +45,18 @@ public class SongService : ISongService
         await _invoker.ExecuteCommandsAsync();
 
         var createdSong = command.CreatedSong;
+
+        // Assicura che l'album sia incluso nella risposta
+        if (createdSong.AlbumId != 0)
+        {
+            var album = await _albumRepository.GetByIdAsync(createdSong.AlbumId);
+            createdSong.Album = album;
+        }
+
         _subject.Notify($"Song created: {createdSong.Name}");
         return _mapper.Map<SongDTO>(createdSong);
     }
+
 
 
     public async Task UpdateSongAsync(int songId, CreateSongDTO songDto)

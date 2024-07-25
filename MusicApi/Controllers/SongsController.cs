@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MusicApi.Abstract;
 using MusicApi.DTO.RequestDTO;
@@ -51,7 +52,9 @@ namespace MusicApi.Controllers
             }
         }
 
+        // Autenticazione tramite JWL
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateSongDTO songDto)
         {
             if (!ModelState.IsValid)
@@ -69,6 +72,7 @@ namespace MusicApi.Controllers
                 return StatusCode(500, "An error occurred while creating the song.");
             }
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CreateSongDTO songDto)
