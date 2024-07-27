@@ -15,6 +15,7 @@ using AutoMapper;
 using MusicApi.Abstract;
 using MusicApi.Service.HTTP_Client;
 using FluentValidation.AspNetCore;
+using System.Reflection;
 
 namespace MusicApi.ProgramSetup.ServiceRegistration
 {
@@ -40,12 +41,9 @@ namespace MusicApi.ProgramSetup.ServiceRegistration
             // Aggiungi AutoMapper
             services.AddAutoMapper(typeof(ArtistMappingProfile), typeof(AlbumMappingProfile), typeof(SongMappingProfile));
 
-
             // Registrazione Fluent Validation
-            services.AddControllers()
-                    .AddFluentValidation(fv =>
-                                fv.RegisterValidatorsFromAssemblyContaining<CreateArtistDTOValidator>());
-
+            services.AddFluentValidationAutoValidation()
+                .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
             //// Registrazione Fluent Validation
             //services.AddTransient<IValidator<CreateAlbumDTO>, CreateAlbumDTOValidator>();
