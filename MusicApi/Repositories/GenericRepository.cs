@@ -38,11 +38,32 @@ namespace MusicApi.Repositories
             return await _dbSet.FindAsync(id);
         }
 
+        //public async Task AddAsync(T entity)
+        //{
+        //    _dbSet.Add(entity);
+        //    await _context.SaveChangesAsync();
+        //}
+
+        // Post nel db col Rollback
         public async Task AddAsync(T entity)
         {
-            _dbSet.Add(entity);
-            await _context.SaveChangesAsync();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _dbSet.Add(entity);
+                    await _context.SaveChangesAsync();
+                    transaction.Commit(); // Commit solo se non ci sono eccezioni
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback(); // Rollback in caso di eccezione
+                    throw; // Rilancia l'eccezione per eventuali ulteriori gestioni
+                }
+            }
         }
+
+
 
         public async Task UpdateAsync(T entity)
         {

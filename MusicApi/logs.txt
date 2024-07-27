@@ -1,5 +1,3 @@
-Artist created: Marco Silveri
-Artist updated: Ciao Bello
 Artist created: Marco Bianchi
 Album created: Primo Album
 Song created: Canzone 1
@@ -7,10 +5,9 @@ Song created: Canzone 2
 Album created: Secondo Album
 Song created: Jazz Inizio
 Song created: Jazz Fine
-Artist created: ciao aaaaa
-Artist created: aaaa straaaaaaing
-Album created: seeetring
-Song created: aaaaaaaaaaaaaaaaaa
+Artist created: a a
+Artist created: a a
+Song created: a
 Artist created: Marco Bianchi
 Album created: Primo Album
 Song created: Canzone 1
@@ -18,92 +15,4 @@ Song created: Canzone 2
 Album created: Secondo Album
 Song created: Jazz Inizio
 Song created: Jazz Fine
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Artist created: Docker Daje
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Song created: aaaaaaaaaaaaaaaa
-Song created: ddddd
-Song created: sssss
-Song created: adsdsdasdadasd
-Song created: adsdsdasdadasd
-Song created: Provaaaaaa
-Song created: Provadddddddddaaaa
-Song deleted: 1
-Song deleted: 1
-Song deleted: 1
-Artist created: Marco Bianchi
-Album created: Primo Album
-Song created: Canzone 1
-Song created: Canzone 2
-Album created: Secondo Album
-Song created: Jazz Inizio
-Song created: Jazz Fine
-Song created: delectus aut autem
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song updated: ciao
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song deleted: 1
-Song created: New Song
-Song updated: Updated Song
-Song deleted: 1
-Song created: New Song
-Song updated: Updated Song
-Song deleted: 1
+Artist created: a a

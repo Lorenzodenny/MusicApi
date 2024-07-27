@@ -10,17 +10,16 @@ using MusicApi.Service.Facade;
 using MusicApi.Utilities.Decorator;
 using MusicApi.Utilities.Proxies;
 using MusicApi.Validators;
-using MusicApi;
-using FluentValidation.AspNetCore;
-using MusicApi.Service.HTTP_Client;
-using MusicApi.Utilities.Observers;
-using MusicApi.Utilities.Commands;
-using FluentValidation;
 using MusicApi.DTO.RequestDTO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using AutoMapper;
+using FluentValidation;
+using Microsoft.OpenApi.Models;
+using MusicApi.Service.HTTP_Client;
+using MusicApi.Utilities.Commands;
+using MusicApi.Utilities.Observers;
 
 namespace MusicApi
 {
@@ -35,75 +34,90 @@ namespace MusicApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-           
-            // Registrazione dei controller e dei servizi essenziali
+            // Basic controller support without views
             services.AddControllers();
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
 
-            // Configurazione del contesto del database con Entity Framework
+            // API documentation with Swagger/OpenAPI
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Music API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme.",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+                        },
+                        new List<string>()
+                    }
+                });
+            });
+
+            // Database context configuration
             services.AddDbContext<MusicApiContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            // Registrazione del servizio delle canzoni, album e artisti con iniezione di dipendenza
+            // Service layer and business logic
             services.AddScoped<ISongService, SongService>();
             services.AddScoped<IAlbumService, AlbumService>();
             services.AddScoped<IArtistService, ArtistService>();
-
-            // Registrazione Repository generico
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            // Aggiungi AutoMapper
+            // AutoMapper for object-object mapping
             services.AddAutoMapper(typeof(ArtistMappingProfile), typeof(AlbumMappingProfile), typeof(SongMappingProfile));
 
-            // Registrazione dei controller e FluentValidation
-            services.AddControllers();
-
-            // Registrazione esplicita dei validatori
+            // Fluent Validation for DTOs
             services.AddTransient<IValidator<CreateAlbumDTO>, CreateAlbumDTOValidator>();
             services.AddTransient<IValidator<CreateArtistDTO>, CreateArtistDTOValidator>();
             services.AddTransient<IValidator<CreateSongDTO>, CreateSongDTOValidator>();
 
-            // Registrazione delle operazioni base e dei decorator
+            // Caching and decoration
+            services.AddMemoryCache();
             services.AddScoped<ISongOperation, BasicSongOperation>();
             services.Decorate<ISongOperation, LoggingSongOperationDecorator>();
-
-            // Aggiungi Memory Cache
-            services.AddMemoryCache();
-
-            // Registrazione del Proxy per il caching
             services.Decorate<ISongService, CachingSongServiceProxy>();
 
-            // Registrazione Facade
+            // Facade for managing complex interactions
             services.AddScoped<IMusicManagementFacade, MusicManagementFacade>();
 
-            // Registra HttpClient
+            // External HTTP calls setup
+            services.AddHttpClient<FakeApiService>();
             services.AddHttpClient();
 
-            // Configura Client
-            services.AddHttpClient<FakeApiService>();
-
-            // Registrazione del Command Invoker e del suo esecutore concreto
-            services.AddScoped<ICommandInvoker, CommandInvoker>();
-
-            // ** Aggiungi la registrazione di ISubject e i suoi componenti correlati **
+            // Command pattern and observer pattern for operations and logging
             services.AddSingleton<ISubject, Subject>();
             services.AddSingleton<IObserver, LoggerObserver>();
+            services.AddScoped<ICommandInvoker, CommandInvoker>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // Configurazione del middleware, inclusa la documentazione Swagger in sviluppo
             if (env.IsDevelopment())
             {
+                app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-            // Middleware per l'autorizzazione e il routing delle richieste
             app.UseRouting();
-            app.UseAuthorization();  // Abilita l'autorizzazione
-            // Mappatura dei controller
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
@@ -111,4 +125,3 @@ namespace MusicApi
         }
     }
 }
-
