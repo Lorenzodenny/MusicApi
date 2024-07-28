@@ -20,17 +20,22 @@ namespace MusicApi.Utilities.Proxies
             _cache = cache;
         }
 
-        public async Task<IEnumerable<SongDTO>> GetAllSongsAsync()
+        public async Task<IEnumerable<SongDTO>> GetAllSongsAsync(string name = null, int? year = null)
         {
-            if (_cache.TryGetValue("songs_all", out IEnumerable<SongDTO> cachedSongs))
+            // Costruzione della chiave di cache incorporando i filtri
+            string cacheKey = $"songs_all_name_{name ?? "all"}_year_{year?.ToString() ?? "all"}";
+
+            if (_cache.TryGetValue(cacheKey, out IEnumerable<SongDTO> cachedSongs))
             {
                 return cachedSongs;
             }
 
-            var songs = await _wrappedService.GetAllSongsAsync();
-            _cache.Set("songs_all", songs, TimeSpan.FromMinutes(10)); // Cache for 10 minutes
+            var songs = await _wrappedService.GetAllSongsAsync(name, year);
+            _cache.Set(cacheKey, songs, TimeSpan.FromMinutes(10)); // Cache for 10 minutes
             return songs;
         }
+
+
 
         public async Task<SongDTO> GetSongByIdAsync(int songId)
         {

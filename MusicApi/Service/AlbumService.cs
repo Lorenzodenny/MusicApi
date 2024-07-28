@@ -27,7 +27,7 @@ public class AlbumService : IAlbumService
 
     public async Task<IEnumerable<AlbumDTO>> GetAllAlbumsAsync()
     {
-        var albums = await _albumRepository.GetAllIncludingAsync(album => album.Artist);
+        var albums = await _albumRepository.GetAllIncludingAsync(null, album => album.Artist);
         return _mapper.Map<IEnumerable<AlbumDTO>>(albums);
     }
 

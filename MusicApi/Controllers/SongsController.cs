@@ -22,12 +22,13 @@ namespace MusicApi.Controllers
             _songService = songService;
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string name = null, [FromQuery] int? year = null)
         {
             try
             {
-                var songs = await _songService.GetAllSongsAsync();
+                var songs = await _songService.GetAllSongsAsync(name, year);
                 return Ok(songs);
             }
             catch (Exception ex)
@@ -35,6 +36,7 @@ namespace MusicApi.Controllers
                 return StatusCode(500, "An error occurred while retrieving songs.");
             }
         }
+
 
         // Qui uso il decorator
         [HttpGet("{id}")]

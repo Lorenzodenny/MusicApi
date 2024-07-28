@@ -22,16 +22,26 @@ namespace MusicApi.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        // Metodo per inserire dinamicamente gli include
-        public async Task<List<T>> GetAllIncludingAsync(params Expression<Func<T, object>>[] includeProperties)
+        // Metodo per inserire dinamicamente gli include e accettare parametri in entrata
+        public async Task<List<T>> GetAllIncludingAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includeProperties)
         {
             IQueryable<T> query = _dbSet;
+
+            // Applica il filtro se presente
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            // Applica gli include
             foreach (var includeProperty in includeProperties)
             {
                 query = query.Include(includeProperty);
             }
+
             return await query.ToListAsync();
         }
+
 
         public async Task<T> GetByIdAsync(int id)
         {

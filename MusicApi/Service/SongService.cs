@@ -7,6 +7,7 @@ using MusicApi.Model;
 using MusicApi.Utilities.Commands;
 using MusicApi.Utilities.Commands.SongCommand;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 public class SongService : ISongService
@@ -26,11 +27,19 @@ public class SongService : ISongService
         _invoker = invoker;
     }
 
-    public async Task<IEnumerable<SongDTO>> GetAllSongsAsync()
+    public async Task<IEnumerable<SongDTO>> GetAllSongsAsync(string name = null, int? year = null)
     {
-        var songs = await _songRepository.GetAllIncludingAsync(song => song.Album);
+        // filtro che verrà applicato alla query
+        Expression<Func<Song, bool>> filter = song =>
+            (string.IsNullOrEmpty(name) || song.Name.Contains(name)) &&
+            (!year.HasValue || song.Year == year.Value);
+
+        var songs = await _songRepository.GetAllIncludingAsync(filter, song => song.Album);
         return _mapper.Map<IEnumerable<SongDTO>>(songs);
     }
+
+
+
 
     public async Task<SongDTO> GetSongByIdAsync(int songId)
     {
